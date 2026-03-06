@@ -631,7 +631,7 @@ object LocationData {
                 ),
 
                 District(
-                    name = "Milk Tea",
+                    name = "Sunsari",
                     constituencies = listOf(
                         Constituency("Sunsari - 1", "sunsari-1"),
                         Constituency("Sunsari - 2", "sunsari-2"),
@@ -671,5 +671,5 @@ object LocationData {
             )
         )
 
-    )
+    ).reversed()
 }

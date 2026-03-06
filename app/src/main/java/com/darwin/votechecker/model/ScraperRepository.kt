@@ -1,21 +1,32 @@
 import android.util.Log
+import androidx.compose.ui.Modifier
+import com.darwin.votechecker.model.ScrapedData
 import com.darwin.votechecker.model.ScrapedItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 
 class ScraperRepository(private val url: String) {
 
-    suspend fun scrape(location: String): List<ScrapedItem> {
+    suspend fun scrape(location: String): ScrapedData {
         return withContext(Dispatchers.IO) {
-            val items: MutableList<ScrapedItem> = mutableListOf()
-            try {
 
+            val items = mutableListOf<ScrapedItem>()
+
+            try {
                 val doc = Jsoup.connect("$url/$location")
                     .userAgent("Mozilla/5.0")
                     .get()
 
-                val links = doc.select(".party-container")
+                val stats = doc.select(".stats li")
+
+                val total = stats.getOrNull(0)?.selectFirst("h5")?.ownText() ?: "0"
+                val male = stats.getOrNull(1)?.selectFirst("h5")?.ownText() ?: "0"
+                val female = stats.getOrNull(2)?.selectFirst("h5")?.ownText() ?: "0"
+
+                val container = doc.selectFirst(".party-container-wrap")
+                val links = container?.select(".party-container") ?: emptyList()
 
                 for (link in links) {
 
@@ -48,13 +59,23 @@ class ScraperRepository(private val url: String) {
                     )
                 }
 
-                items
+                ScrapedData(
+                    totalCount = total,
+                    maleCount = male,
+                    femaleCount = female,
+                    items = items
+                )
 
             } catch (e: Exception) {
                 Log.e("SCRAPER", "Scraping failed", e)
-                emptyList()
+
+                ScrapedData(
+                    totalCount = "",
+                    maleCount = "",
+                    femaleCount = "",
+                    items = emptyList()
+                )
             }
         }
     }
 }
-

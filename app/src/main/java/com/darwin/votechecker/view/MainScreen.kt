@@ -182,7 +182,7 @@ fun MainScreen(viewModel: ScraperViewModel = viewModel()) {
             return@Column
         }
 
-        if (viewModel.items.isEmpty()) {
+        if (viewModel.data.items.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -193,8 +193,15 @@ fun MainScreen(viewModel: ScraperViewModel = viewModel()) {
         }
 
         LazyColumn {
+            item {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text("Total Voter: ${viewModel.data.totalCount}")
+                    Text("Male Voter: ${viewModel.data.maleCount}")
+                    Text("Female Voter: ${viewModel.data.femaleCount}")
 
-            items(viewModel.items) { item ->
+                }
+            }
+            items(viewModel.data.items) { item ->
 
                 Card(
                     modifier = Modifier
